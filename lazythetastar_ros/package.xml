@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>lazythetastar_ros</name>
+  <version>1.0.0</version>
+  <description>A ROS 2 package using lazy theta star for path planning</description>
+
+  <maintainer email="connortynan16@gmail.com">Connor Tynan</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- ROS 2 dependencies -->
+  <build_depend>rclcpp</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+
+  <!-- Dependency on lazythetastar -->
+  <build_depend>lazythetastar</build_depend>
+
+  <!-- Executable dependencies -->
+  <exec_depend>rclcpp</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>lazythetastar</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

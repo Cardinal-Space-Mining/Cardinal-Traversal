@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>lazythetastar</name>
+  <version>1.0.0</version>
+  <description>lazy theta star path planning</description>
+
+  <maintainer email="connortynan16@gmail.com">Connor Tynan</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <build_depend>Eigen3</build_depend>
+  <build_depend>OpenCV</build_depend>
+
+  <exec_depend>Eigen3</exec_depend>
+  <exec_depend>OpenCV</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
