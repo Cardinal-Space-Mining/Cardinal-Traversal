@@ -1,7 +1,7 @@
 # Cardinal Traversal
 Lazy Theta* path planning to Twist ROS Node
 
-##ROS 2 node 
+## ROS 2 node 
 input:
 - nav_msgs::msg::OccupancyGrid weights
 - geometry_msgs::msg::PoseStamped current_pose
