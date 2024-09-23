@@ -6,6 +6,7 @@ input:
 - nav_msgs::msg::OccupancyGrid weights
 - geometry_msgs::msg::PoseStamped current_pose
 - geometry_msgs::msg::Pose target_pose
+
 output:
 - geometry_msgs::msg::TwistStamped twist
 
