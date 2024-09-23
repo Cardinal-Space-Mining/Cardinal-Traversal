@@ -16,7 +16,7 @@ output:
 2. Create and go to src directory:
 - `mkdir src && cd src`
 3. Clone this repository:
-- `git clone https://github.com/connortynan/ufomap_ros2`
+- `git clone https://github.com/connortynan/CardinalTraversal`
 4. Build from workspace directory:
 - `cd ../ && colcon build`
 
