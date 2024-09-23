@@ -1,3 +1,6 @@
+#ifndef GRID_UTILS_H
+#define GRID_UTILS_H
+
 #include <Eigen/Core>
 #include <opencv2/imgproc.hpp>
 
@@ -66,6 +69,15 @@ namespace lazythetastar
                 cv::Mat blurredGrid;
                 cv::GaussianBlur(dilatedGrid, blurredGrid, cv::Size(blurSize | 1, blurSize | 1), 0.0, 0.0); // blur size must be odd
 
+                double temp, maxValBefore, maxValAfter;
+                cv::minMaxLoc(dilatedGrid, &temp, &maxValBefore);
+                cv::minMaxLoc(blurredGrid, &temp, &maxValAfter);
+
+                if (maxValAfter > 0)
+                {
+                    blurredGrid.convertTo(blurredGrid, -1, maxValBefore / maxValAfter);
+                }
+
                 dst = blurredGrid;
             }
             else
@@ -77,3 +89,5 @@ namespace lazythetastar
     };
 
 }
+
+#endif // GRID_UTILS_H

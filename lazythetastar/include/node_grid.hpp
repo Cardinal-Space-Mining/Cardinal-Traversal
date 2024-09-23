@@ -81,30 +81,36 @@ namespace lazythetastar
         }
 
     public:
-        template <typename WeightT = uint8_t, typename IntT = mapsize_t>
         NodeGrid::Path get_path(
-            const WeightT *weights,
-            const Eigen::Vector2<IntT> &wsize,
-            const Eigen::Vector2<IntT> &start,
-            const Eigen::Vector2<IntT> &goal,
-            const WeightT line_of_sight_threshold);
+            const uint8_t *weights,
+            const Vec2m &wsize,
+            const Vec2m &start,
+            const Vec2m &goal,
+            const uint8_t line_of_sight_threshold);
+
+        NodeGrid::Path get_path(
+            const uint8_t *weights,
+            const size_t weight_cell_w, const size_t weight_cell_h,
+            const float weight_origin_x, const float weight_origin_y,
+            const float weight_resolution,
+            const float start_x, const float start_y,
+            const float goal_x, const float goal_y,
+            const uint8_t line_of_sight_threshold);
 
     private:
-        template <typename WeightT = uint8_t, typename IntT = mapsize_t>
         NodeGrid::Path backtrace_path(
             Node *_start_node,
             Node *_end_node,
-            const WeightT *weights,
-            const Eigen::Vector2<IntT> &wsize,
-            const WeightT threshold);
+            const uint8_t *weights,
+            const Vec2m &wsize,
+            const uint8_t threshold);
 
-        template <typename WeightT = uint8_t, typename IntT = mapsize_t>
         bool line_of_sight(
-            const WeightT *weights,
-            const Eigen::Vector2<IntT> &wsize,
+            const uint8_t *weights,
+            const Vec2m &wsize,
             const mapsize_t a_idx,
             const mapsize_t b_idx,
-            const WeightT threshold);
+            const uint8_t threshold);
 
     private:
         std::vector<Node> grid;
