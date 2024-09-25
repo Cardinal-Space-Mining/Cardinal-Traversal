@@ -25,5 +25,4 @@ output:
 - Accept occupancy_grid + poses for path planning
 - Accept current_pose + calculated path for trajectory planning
 - Make the trajectory planning algorithm
-- i think theres a potential infinite loop somewhere in path planning
 - fix bugs currently unbeknownst
