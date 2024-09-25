@@ -67,10 +67,7 @@ namespace lazythetastar
 
         std::deque<Node *> queue_backer;
 
-        std::priority_queue<Node *,
-                            std::deque<Node *>,
-                            NodeCmp>
-            queue;
+        std::priority_queue<Node *, std::deque<Node *>, NodeCmp> queue;
         queue.push(&_start_node);
 
         std::unordered_set<mapsize_t> visited_node_idxs;

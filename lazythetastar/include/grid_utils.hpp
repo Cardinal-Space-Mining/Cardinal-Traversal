@@ -9,14 +9,14 @@ namespace lazythetastar
     /** Generic grid helpers */
     namespace GridUtils
     {
-        class alignas(32) Vector2m
+        class Vector2m
         {
         public:
             int64_t x, y;
             Vector2m(int64_t _x, int64_t _y) : x(_x), y(_y) {}
         };
 
-        class alignas(32) Vector2f
+        class Vector2f
         {
         public:
             float x, y;
