@@ -9,25 +9,34 @@ set(SOURCE_LIST
 
 set(HEADER_LIST
     "${PROJECT_SOURCE_DIR}/include/node_grid.hpp"
-    "${PROJECT_SOURCE_DIR}/include/grid_utils.hpp")
+    "${PROJECT_SOURCE_DIR}/include/grid_utils.hpp"
+    )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_LIST})
 
+# Enable debug tools
+target_compile_definitions(${PROJECT_NAME} PUBLIC DEBUG_TOOLS)
+
 # Find dependencies
-find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
 
+# Include directories
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
-        ${OpenCV_INCLUDE_DIRS}
+        ${OpenCV_INCLUDE_DIRS}  # Add OpenCV include directories
 )
 
+# Link libraries
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        ${OpenCV_LIBS}
-        Eigen3::Eigen)
+        ${OpenCV_LIBS}  # Link against OpenCV libraries
+)
+
+install(DIRECTORY include/
+    DESTINATION include
+)
 
 # IDEs should put the headers in a nice place
 source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Header Files" FILES ${HEADER_LIST})

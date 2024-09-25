@@ -17,7 +17,6 @@ find_package(geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 
 # Other dependencies
-find_package(OpenCV REQUIRED)
 find_package(lazythetastar REQUIRED)
 
 # Specify include directories
@@ -32,7 +31,7 @@ ament_target_dependencies(${PROJECT_NAME}_node
   rclcpp 
   nav_msgs 
   geometry_msgs 
-  std_msgs 
+  std_msgs
   lazythetastar)
 
 target_include_directories(${PROJECT_NAME}_node

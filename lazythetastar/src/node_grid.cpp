@@ -2,6 +2,8 @@
 #include "grid_utils.hpp"
 
 #include <queue>
+#include <unordered_set>
+#include <cmath>
 
 namespace lazythetastar
 {
@@ -14,16 +16,19 @@ namespace lazythetastar
         const float goal_x, const float goal_y,
         const uint8_t line_of_sight_threshold)
     {
-        Vec2m _wsize{weight_cell_w, weight_cell_h};
-        Eigen::Vector2<float> _worigin{weight_origin_x, weight_origin_y};
+        Vec2m _wsize(
+            static_cast<int64_t>(weight_cell_w),
+            static_cast<int64_t>(weight_cell_h));
+        Vec2f _worigin(weight_origin_x, weight_origin_y);
 
-        Vec2m _start = GridUtils::gridAlign<mapsize_t, float>(start_x, start_y, _worigin, weight_resolution);
-        Vec2m _goal = GridUtils::gridAlign<mapsize_t, float>(goal_x, goal_y, _worigin, weight_resolution);
+        Vec2m _start = GridUtils::gridAlign(start_x, start_y, _worigin, weight_resolution);
+        Vec2m _goal = GridUtils::gridAlign(goal_x, goal_y, _worigin, weight_resolution);
 
         return get_path(weights, _wsize, _start, _goal, line_of_sight_threshold);
     }
 
-    NodeGrid::Path NodeGrid::get_path(
+    NodeGrid::Path
+    NodeGrid::get_path(
         const uint8_t *weights,
         const Vec2m &wsize,
         const Vec2m &start,
@@ -31,42 +36,46 @@ namespace lazythetastar
         const uint8_t line_of_sight_threshold)
     {
         const int64_t
-            _area = static_cast<int64_t>(wsize.x()) * wsize.y(),
-            _start_idx = GridUtils::gridIdx<mapsize_t>(start, wsize),
-            _goal_idx = GridUtils::gridIdx<mapsize_t>(goal, wsize);
+            _area = wsize.x * wsize.y,
+            _start_idx = GridUtils::gridIdx(start, wsize),
+            _goal_idx = GridUtils::gridIdx(goal, wsize);
 
         static const Vec2m
-            _zero = Vec2m::Zero();
+            _zero = Vec2m{0, 0};
 
         if (
-            !GridUtils::inRange<mapsize_t>(start, _zero, wsize) ||
-            !GridUtils::inRange<mapsize_t>(goal, _zero, wsize) ||
+            !GridUtils::inRange(start, _zero, wsize) ||
+            !GridUtils::inRange(goal, _zero, wsize) ||
             (_start_idx == _goal_idx))
         {
             return NodeGrid::Path{}; // Return empty path
         }
 
         this->resize(_area);
-        for (size_t i = 0; i < this->grid.size(); i++)
+        for (size_t i = 0; i < _area; i++)
         {
-            this->grid[i].h = static_cast<fweight_t>(
-                (goal - GridUtils::gridLoc<mapsize_t>(i, wsize)).norm());
-            this->grid[i].g = std::numeric_limits<fweight_t>::infinity();
+            float dx = static_cast<float>(goal.x - (static_cast<int32_t>(i) % wsize.x));
+            float dy = static_cast<float>(goal.y - (static_cast<int32_t>(i) / wsize.x));
+            this->grid[i].h = std::sqrt(dx * dx + dy * dy);
+            this->grid[i].g = std::numeric_limits<float>::infinity();
             this->grid[i].parent_idx = NodeGrid::INVALID_IDX;
             this->grid[i].self_idx = i;
         }
 
         Node &_start_node = this->grid[_start_idx];
-        _start_node.g = static_cast<fweight_t>(0);
+        _start_node.g = 0.f;
 
-        std::vector<Node *> queue_backer;
-        queue_backer.reserve(static_cast<size_t>(_area));
+        std::deque<Node *> queue_backer;
 
         std::priority_queue<Node *,
-                            std::vector<Node *>,
+                            std::deque<Node *>,
                             NodeCmp>
-            queue{NodeCmp{}, std::move(queue_backer)};
+            queue;
         queue.push(&_start_node);
+
+        std::unordered_set<mapsize_t> visited_node_idxs;
+        visited_node_idxs.reserve(static_cast<size_t>(_area));
+        visited_node_idxs.insert(_start_node.self_idx);
 
         while (!queue.empty())
         {
@@ -80,26 +89,34 @@ namespace lazythetastar
                                       line_of_sight_threshold);
             }
 
-            // else
-            const Vec2m
-                _loc = GridUtils::gridLoc<mapsize_t>(_node.self_idx, wsize);
+            const Vec2m _loc = GridUtils::gridLoc(_node.self_idx, wsize);
 
-            for (size_t i = 0; i < NUM_MOVES; i++)
+            const uint64_t _node_weight = static_cast<uint64_t>(weights[_node.self_idx]);
+
+            for (size_t i = 0; i < 8; i++)
             {
-                const Vec2m _neighbor_loc = _loc + std::get<0>(MOVES[i]).template cast<mapsize_t>();
-                if (!GridUtils::inRange<mapsize_t>(_neighbor_loc, _zero, wsize))
+                const Vec2m _offset = NBR_MOVES[i];
+                const Vec2m _neighbor_loc{_loc.x + _offset.x, _loc.y + _offset.y};
+                if (!GridUtils::inRange(_neighbor_loc, _zero, wsize))
                     continue;
 
-                const int64_t _idx = GridUtils::gridIdx<mapsize_t>(_neighbor_loc, wsize);
+                const int64_t _idx = GridUtils::gridIdx(_neighbor_loc, wsize);
                 Node &_neighbor = this->grid[_idx];
 
-                const fweight_t tentative_g = _node.g + (static_cast<uint64_t>(weights[_node.self_idx]) + weights[_neighbor.self_idx] + 1) * 0.5 * std::get<1>(MOVES[i]);
+                const float tentative_g =
+                    _node.g + static_cast<float>(_node_weight) + static_cast<float>(weights[_neighbor.self_idx]) * NBR_MULTS[i];
 
                 if (tentative_g < _neighbor.g)
                 {
                     _neighbor.parent_idx = _node.self_idx;
                     _neighbor.g = tentative_g;
-                    queue.push(&_neighbor);
+
+                    // Check if neighbor has already been visited, if not, add to queue and closed set
+                    if (visited_node_idxs.find(_neighbor.self_idx) == visited_node_idxs.end())
+                    {
+                        visited_node_idxs.insert(_neighbor.self_idx);
+                        queue.push(&_neighbor);
+                    }
                 }
             }
         }
@@ -114,7 +131,7 @@ namespace lazythetastar
     {
         Path result;
 
-        result.push_back(GridUtils::gridLoc<mapsize_t>(_start_node->self_idx, wsize).template cast<mapsize_t>());
+        result.push_back(GridUtils::gridLoc(_start_node->self_idx, wsize));
 
         Node *_current_node = _start_node;
         while (_current_node->self_idx != _end_node->self_idx)
@@ -133,7 +150,7 @@ namespace lazythetastar
                 }
                 _itr_node = &this->grid[_itr_node->parent_idx];
             }
-            result.push_back(GridUtils::gridLoc<mapsize_t>(_itr_node->self_idx, wsize).template cast<mapsize_t>());
+            result.push_back(GridUtils::gridLoc(_itr_node->self_idx, wsize));
             _current_node = _itr_node;
         }
 
@@ -146,14 +163,14 @@ namespace lazythetastar
         const uint8_t threshold)
     {
         Vec2m
-            a_loc = GridUtils::gridLoc<mapsize_t>(a_idx, wsize),
-            b_loc = GridUtils::gridLoc<mapsize_t>(b_idx, wsize);
+            a_loc = GridUtils::gridLoc(a_idx, wsize),
+            b_loc = GridUtils::gridLoc(b_idx, wsize);
 
         int64_t
-            x1 = a_loc.x(),
-            y1 = a_loc.y(),
-            x2 = b_loc.x(),
-            y2 = b_loc.y(),
+            x1 = a_loc.x,
+            y1 = a_loc.y,
+            x2 = b_loc.x,
+            y2 = b_loc.y,
 
             dx = std::abs(static_cast<int64_t>(x2) - static_cast<int64_t>(x1)),
             dy = std::abs(static_cast<int64_t>(y2) - static_cast<int64_t>(y1)),
@@ -163,7 +180,7 @@ namespace lazythetastar
 
         while (true)
         {
-            mapsize_t idx = GridUtils::gridIdx<mapsize_t>(Vec2m(x1, y1), wsize);
+            mapsize_t idx = x1 + y1 * wsize.x;
             if (weights[idx] > threshold)
                 return false;
 
