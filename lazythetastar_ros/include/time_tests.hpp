@@ -29,7 +29,7 @@ void time_one_path(const int w, const int h,
                    const int gx, const int gy,
                    const int num_obstacles, const int obstacle_radius,
                    const float obstacle_falloff,
-                   std::ofstream &output_file,
+                   std::ofstream &output_file, std::string extra_data,
                    bool show_im)
 {
     auto t1 = std::chrono::high_resolution_clock::now();
@@ -69,13 +69,16 @@ void time_one_path(const int w, const int h,
     double time2 = diff2.count() * 1E6;
     double time3 = diff3.count() * 1E6;
 
+    if (extra_data.size() > 0)
+        output_file << extra_data << ",";
+
     output_file << w << "," << h << "," << sx << "," << sy << "," << gx << "," << gy << "," << num_obstacles << "," << obstacle_radius << "," << obstacle_falloff << "," << time1 << "," << time2 << "," << time3 << "," << length << "," << joints << std::endl;
 }
 
 void multi_trial(const int trial_num,
                  const int width, const int height,
                  const int max_obstacles, const int obstacle_radius, float obstacle_falloff,
-                 std::string filepath)
+                 std::string filepath, std::string extra_data)
 {
     std::ofstream file{filepath, std::ios::app};
     if (!file.is_open())
@@ -90,12 +93,18 @@ void multi_trial(const int trial_num,
 
     for (long i = 0; i < trial_num; i++)
     {
-        int sx = rand() % width;
-        int sy = rand() % height;
-        int gx = rand() % width;
-        int gy = rand() % height;
-        int n_obs = rand() % max_obstacles;
-        time_one_path(width, height, sx, sy, gx, gy, n_obs, obstacle_radius, obstacle_falloff, file, trial_num == 1);
+        // int sx = rand() % width;
+        // int sy = rand() % height;
+        // int gx = rand() % width;
+        // int gy = rand() % height;
+        // int n_obs = rand() % max_obstacles;
+
+        int sx = 10;
+        int sy = 10;
+        int gx = width - 10;
+        int gy = height - 10;
+        int n_obs = 10;
+        time_one_path(width, height, sx, sy, gx, gy, n_obs, obstacle_radius, obstacle_falloff, file, extra_data, trial_num == 1);
 
         printf("\rTrial %ld complete", i + 1);
     }

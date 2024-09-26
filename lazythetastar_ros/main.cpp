@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     const double
         arena_w = 7.0,
         arena_h = 5.0,
-        resolution = 0.01,
+        resolution = 0.02,
         robot_rad = 0.7;
 
     const int
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
         h = std::ceil(arena_h / resolution),
         rad = std::ceil(robot_rad / resolution);
 
-    multi_trial(trials, w, h, 50, rad, 0.2f, "lts_data.csv");
+    multi_trial(trials, w, h, 50, rad, 0.2f, "path_plan_data.csv", "");
 
     return 0;
 }
