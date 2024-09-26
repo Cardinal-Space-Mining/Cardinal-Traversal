@@ -5,7 +5,6 @@
 
 namespace lazythetastar
 {
-
     void expand(cv::Mat &src, cv::Mat &dst, int radius, float falloffSmoothness)
     {
         int diameter = 2 * radius + 1;
@@ -30,12 +29,12 @@ namespace lazythetastar
                 blurredGrid.convertTo(blurredGrid, -1, maxValBefore / maxValAfter);
             }
 
-            dst = blurredGrid;
+            blurredGrid.copyTo(dst);
         }
         else
         {
             // Don't blur if there is no falloff
-            dst = dilatedGrid;
+            dilatedGrid.copyTo(dst);
         }
     }
 
@@ -44,8 +43,6 @@ namespace lazythetastar
         cv::Mat mat(height, width, CV_8UC1, data);
 
         expand(mat, mat, radius, falloffSmoothness);
-
-        std::memcpy(data, mat.data, mat.total() * mat.elemSize());
     }
 }
 
