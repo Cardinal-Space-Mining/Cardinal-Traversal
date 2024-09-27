@@ -54,8 +54,8 @@ namespace lazythetastar
         this->resize(_area);
         for (size_t i = 0; i < _area; i++)
         {
-            float dx = static_cast<float>(goal.x - (static_cast<int32_t>(i) % wsize.x));
-            float dy = static_cast<float>(goal.y - (static_cast<int32_t>(i) / wsize.x));
+            float dx = static_cast<float>(goal.x) - (static_cast<float>(i % wsize.x));
+            float dy = static_cast<float>(goal.y) - (static_cast<float>(i / wsize.x));
             this->grid[i].h = std::sqrt(dx * dx + dy * dy);
             this->grid[i].g = std::numeric_limits<float>::infinity();
             this->grid[i].parent_idx = NodeGrid::INVALID_IDX;
@@ -72,7 +72,6 @@ namespace lazythetastar
 
         std::unordered_set<mapsize_t> visited_node_idxs;
         visited_node_idxs.reserve(static_cast<size_t>(_area));
-        visited_node_idxs.insert(_start_node.self_idx);
 
         while (!queue.empty())
         {
@@ -88,7 +87,9 @@ namespace lazythetastar
 
             const Vec2m _loc = GridUtils::gridLoc(_node.self_idx, wsize);
 
-            const uint64_t _node_weight = static_cast<uint64_t>(weights[_node.self_idx]);
+            // Add a constant 1.f so no path from a node to another is free, it is at least 1
+            // (this also makes the heuritic easily admissible+monotonic w/ euclidean distance)
+            const float _node_weightf = static_cast<float>(weights[_node.self_idx]) + 1.f;
 
             for (size_t i = 0; i < 8; i++)
             {
@@ -101,20 +102,20 @@ namespace lazythetastar
                 Node &_neighbor = this->grid[_idx];
 
                 const float tentative_g =
-                    _node.g + static_cast<float>(_node_weight) + static_cast<float>(weights[_neighbor.self_idx]) * NBR_MULTS[i];
+                    _node.g + (_node_weightf + static_cast<float>(weights[_neighbor.self_idx])) * NBR_MULTS[i];
 
                 if (tentative_g < _neighbor.g)
                 {
                     _neighbor.parent_idx = _node.self_idx;
                     _neighbor.g = tentative_g;
-
-                    // Check if neighbor has already been visited, if not, add to queue and closed set
-                    if (visited_node_idxs.find(_neighbor.self_idx) == visited_node_idxs.end())
-                    {
-                        visited_node_idxs.insert(_neighbor.self_idx);
-                        queue.push(&_neighbor);
-                    }
+                    queue.push(&_neighbor);
                 }
+            }
+
+            // Check if neighbor has already been visited, if not, add to queue and closed set
+            if (visited_node_idxs.find(_node.self_idx) == visited_node_idxs.end())
+            {
+                visited_node_idxs.insert(_node.self_idx);
             }
         }
         // Should never reach here, but handled gracefully

@@ -186,4 +186,23 @@ void multi_trial(const int trial_num,
     printf("\n");
 }
 
+void show_spread(float gradient)
+{
+    const int w = 200, h = 200;
+
+    std::vector<uint8_t> weights;
+    weights.resize(w * h, 0);
+
+    weights[(100) + (100) * w] = 255;
+
+    lazythetastar::expand(weights.data(), w, h, 75, gradient);
+
+    lazythetastar::NodeGrid::Path path;
+    path.reserve(2);
+    path.push_back(lazythetastar::NodeGrid::Vec2m(0, 0));
+    path.push_back(lazythetastar::NodeGrid::Vec2m(0, 0));
+
+    lazythetastar::show_path(weights.data(), {w, h}, path);
+}
+
 #endif // TIME_TESTS_H

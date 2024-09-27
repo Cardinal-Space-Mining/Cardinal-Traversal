@@ -25,4 +25,4 @@ output:
 - Accept occupancy_grid + poses for path planning
 - Accept current_pose + calculated path for trajectory planning
 - Make the trajectory planning algorithm
-- fix bugs currently unbeknownst
+- Maybe make a smarter recalculation strategy?

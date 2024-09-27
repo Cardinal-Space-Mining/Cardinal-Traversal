@@ -4,7 +4,8 @@ project(lazythetastar VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 
 set(SOURCE_LIST
     "${PROJECT_SOURCE_DIR}/src/node_grid.cpp")
