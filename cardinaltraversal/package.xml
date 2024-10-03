@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>lazythetastar_ros</name>
+  <name>cardinaltraversal</name>
   <version>1.0.0</version>
   <description>A ROS 2 package using lazy theta star for path planning</description>
 

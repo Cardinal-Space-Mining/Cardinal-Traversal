@@ -35,7 +35,9 @@ namespace lazythetastar
         inline static Vector2m
         worldToGrid(float x, float y, const Vector2f &off, const float res)
         {
-            return worldToGrid(Vector2f{x, y}, off, res);
+            return Vector2m{
+                static_cast<int32_t>((x - off.x) / res), // always floor since grid cells are indexed by their "bottom left" corner's raw position
+                static_cast<int32_t>((y - off.y) / res)};
         }
 
         inline static Vector2f
