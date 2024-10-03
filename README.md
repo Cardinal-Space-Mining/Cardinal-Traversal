@@ -16,7 +16,7 @@ output:
 2. Create and go to src directory:
 - `mkdir src && cd src`
 3. Clone this repository:
-- `git clone https://github.com/connortynan/CardinalTraversal`
+- `git clone https://github.com/Cardinal-Space-Mining/Cardinal-Traversal`
 4. Build from workspace directory:
 - `cd ../ && colcon build`
 
