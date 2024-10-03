@@ -25,11 +25,25 @@ namespace lazythetastar
 
         /** Align a point to a box grid of the given resolution and offset origin. Result may be negative if lower than current offset. */
         inline static Vector2m
-        gridAlign(float x, float y, const Vector2f &off, float res)
+        worldToGrid(Vector2f &pos, const Vector2f &off, const float res)
         {
             return Vector2m{
-                static_cast<int32_t>((x - off.x) / res), // always floor since grid cells are indexed by their "bottom left" corner's raw position
-                static_cast<int32_t>((y - off.y) / res)};
+                static_cast<int32_t>((pos.x - off.x) / res), // always floor since grid cells are indexed by their "bottom left" corner's raw position
+                static_cast<int32_t>((pos.y - off.y) / res)};
+        }
+
+        inline static Vector2m
+        worldToGrid(float x, float y, const Vector2f &off, const float res)
+        {
+            return worldToGrid(Vector2f{x, y}, off, res);
+        }
+
+        inline static Vector2f
+        gridToWorld(const Vector2m &pos, const Vector2f &off, const float res)
+        {
+            return Vector2f{
+                (static_cast<float>(pos.x) * res) + off.x,
+                (static_cast<float>(pos.y) * res) + off.y};
         }
 
         /** Get a raw buffer idx from a 2d index and buffer size (templated on major-order) */

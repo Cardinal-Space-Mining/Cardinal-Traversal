@@ -13,7 +13,8 @@ set(SOURCE_LIST
 set(HEADER_LIST
     "${PROJECT_SOURCE_DIR}/include/node_grid.hpp"
     "${PROJECT_SOURCE_DIR}/include/grid_utils.hpp"
-    )
+    "${PROJECT_SOURCE_DIR}/include/mapping.hpp"
+)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_LIST})
 
@@ -22,6 +23,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC DEBUG_TOOLS)
 
 # Find dependencies
 find_package(OpenCV REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 # Include directories
 target_include_directories(${PROJECT_NAME}
@@ -29,6 +31,7 @@ target_include_directories(${PROJECT_NAME}
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
         ${OpenCV_INCLUDE_DIRS}  # Add OpenCV include directories
+        ${EIGEN3_INCLUDE_DIRS}
 )
 
 # Link libraries

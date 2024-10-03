@@ -21,8 +21,8 @@ namespace lazythetastar
             static_cast<int64_t>(weight_cell_h));
         Vec2f _worigin(weight_origin_x, weight_origin_y);
 
-        Vec2m _start = GridUtils::gridAlign(start_x, start_y, _worigin, weight_resolution);
-        Vec2m _goal = GridUtils::gridAlign(goal_x, goal_y, _worigin, weight_resolution);
+        Vec2m _start = GridUtils::worldToGrid(start_x, start_y, _worigin, weight_resolution);
+        Vec2m _goal = GridUtils::worldToGrid(goal_x, goal_y, _worigin, weight_resolution);
 
         return get_path(weights, _wsize, _start, _goal, line_of_sight_threshold);
     }

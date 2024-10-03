@@ -25,7 +25,7 @@ include_directories(
   ${lazythetastar_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME}_node main.cpp)
+add_executable(${PROJECT_NAME}_node main.cpp src/traversal_node.cpp)
 
 ament_target_dependencies(${PROJECT_NAME}_node 
   rclcpp 
